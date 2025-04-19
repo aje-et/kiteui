@@ -2,16 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantic Two-Sided Event Timeline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Romantic Mobile Timeline</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             background: linear-gradient(135deg, #ffe6e6 0%, #fff0f5 100%);
             color: #4a2c40;
             overscroll-behavior: none;
+            height: 100vh;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         .timeline {
@@ -23,74 +26,76 @@
         .timeline::after {
             content: '';
             position: absolute;
-            width: 6px;
+            width: 5px;
             background: linear-gradient(to bottom, #ff6b6b, #ff99cc);
             top: 0;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            border-radius: 3px;
+            border-radius: 2px;
             animation: glowLine 3s ease-in-out infinite;
         }
 
         @keyframes glowLine {
-            0% {
-                box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
-            }
+            0% { box-shadow: 0 0 4px rgba(255, 105, 180, 0.5); }
+            50% { box-shadow: 0 0 12px rgba(255, 105, 180, 0.8); }
+            100% { box-shadow: 0 0 4px rgba(255, 105, 180, 0.5); }
         }
 
         .event {
-            padding: 15px 20px;
+            padding: 10px 15px;
             position: relative;
             width: 45%;
             box-sizing: border-box;
             opacity: 0;
-            transform: translateY(50px) scale(0.95);
-            animation: slideIn 0.8s ease-out forwards, bounceIn 0.5s ease-out forwards;
-            animation-delay: calc(0.2s * var(--index));
+            transition: opacity 1s ease-out, transform 1s ease-out;
         }
 
         .event.left {
-            left: 0;
+            transform: translateX(-10%);
             margin-right: 5%;
-            transform-origin: right center;
         }
 
         .event.right {
-            left: 55%;
-            transform-origin: left center;
+            transform: translateX(10%);
+            margin-left: 50%;
         }
 
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        .event.visible {
+            opacity: 1;
+            transform: translateX(0);
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .event.left.visible {
+            animation: slideInLeft 1s ease-out forwards, bounceIn 0.6s ease-out;
+        }
+
+        .event.right.visible {
+            animation: slideInRight 1s ease-out forwards, bounceIn 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(50%); }
+            to { transform: translateX(0); }
         }
 
         @keyframes bounceIn {
-            0% {
-                transform: scale(0.95);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .event .content {
-            padding: 15px;
+            padding: 12px;
             background: rgba(255, 245, 247, 0.95);
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(255, 105, 180, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 3px 12px rgba(255, 105, 180, 0.2);
             border: 1px solid rgba(255, 182, 193, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
@@ -114,189 +119,118 @@
         }
 
         @keyframes shine {
-            0% {
-                left: -100%;
-            }
-            50% {
-                left: 100%;
-            }
-            100% {
-                left: 100%;
-            }
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
         }
 
-        .event .content:hover {
+        .event .content:active {
             transform: scale(1.02);
-            box-shadow: 0 8px 24px rgba(255, 105, 180, 0.4);
+            box-shadow: 0 6px 18px rgba(255, 105, 180, 0.4);
         }
 
         .event h2 {
             color: #ff6b6b;
-            font-size: 1.2em;
-            margin: 0 0 8px;
+            font-size: 1em;
+            margin: 0 0 6px;
             font-weight: 500;
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
-            animation: textFade 1s ease-in;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: textFade 1.2s ease-in forwards;
         }
 
         .event h3 {
             color: #4a2c40;
-            font-size: 1.5em;
-            margin: 0 0 10px;
+            font-size: 1.3em;
+            margin: 0 0 8px;
             font-family: 'Great Vibes', cursive;
-            animation: textFade 1.2s ease-in;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: textFade 1.4s ease-in forwards;
         }
 
         .event p {
-            line-height: 1.5;
-            margin: 0 0 10px;
+            line-height: 1.4;
+            margin: 0;
             font-style: italic;
-            font-size: 0.9em;
-            animation: textFade 1.4s ease-in;
+            font-size: 0.85em;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: textFade 1.8s ease-in forwards;
         }
 
         @keyframes textFade {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .event img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 2px solid #ffb6c1;
-            margin-top: 8px;
+            margin: 6px 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             display: block;
             opacity: 0;
-            animation: imageFade 1s ease-in forwards;
-            animation-delay: calc(0.3s + 0.2s * var(--index));
+            animation: imageFade 1.6s ease-in forwards;
         }
 
-        .event img:hover {
+        .event img:active {
             transform: scale(1.05);
         }
 
         @keyframes imageFade {
-            to {
-                opacity: 1;
-            }
+            to { opacity: 1; }
         }
 
         .event::before {
             content: '♥';
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             background: #ff6b6b;
             color: white;
             border-radius: 50%;
             text-align: center;
-            line-height: 24px;
-            font-size: 14px;
+            line-height: 20px;
+            font-size: 12px;
             z-index: 1;
-            top: 20px;
-            box-shadow: 0 0 8px rgba(255, 105, 180, 0.5);
+            top: 15px;
+            box-shadow: 0 0 6px rgba(255, 105, 180, 0.5);
             animation: pulse 2s infinite, float 3s ease-in-out infinite;
         }
 
         .event.left::before {
-            right: -12px;
+            right: -10px;
         }
 
         .event.right::before {
-            left: -12px;
+            left: -10px;
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 8px rgba(255, 105, 180, 0.5);
-            }
-            50% {
-                transform: scale(1.08);
-                box-shadow: 0 0 12px rgba(255, 105, 180, 0.7);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 8px rgba(255, 105, 180, 0.5);
-            }
+            0% { transform: scale(1); box-shadow: 0 0 6px rgba(255, 105, 180, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 105, 180, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 6px rgba(255, 105, 180, 0.5); }
         }
 
         @keyframes float {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-            100% {
-                transform: translateY(0);
-            }
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0); }
         }
 
-        /* Mobile compatibility */
+        /* Ensure touch scrolling and prevent zoom */
         html, body {
-            height: 100%;
+            touch-action: pan-y;
+            max-width: 100%;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
         }
 
         .timeline, .event, .content {
             max-width: 100%;
             overflow: hidden;
-        }
-
-        @media screen and (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .timeline::after {
-                left: 20px;
-            }
-
-            .event {
-                width: 100%;
-                padding: 10px 15px 10px 50px;
-                left: 0;
-                margin-right: 0;
-            }
-
-            .event.right {
-                left: 0;
-            }
-
-            .event.left::before, .event.right::before {
-                left: 8px;
-                top: 15px;
-                width: 20px;
-                height: 20px;
-                line-height: 20px;
-                font-size: 12px;
-            }
-
-            .event h2 {
-                font-size: 1em;
-            }
-
-            .event h3 {
-                font-size: 1.3em;
-            }
-
-            .event p {
-                font-size: 0.85em;
-            }
-
-            .event .content {
-                padding: 12px;
-            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -307,12 +241,47 @@
     </div>
 
     <script>
+        // Fallback JSON data for testing
+        const fallbackData = [
+            {
+                date: "2023-06-15",
+                title: "Our First Date",
+                description: "The day we met for coffee and talked for hours.",
+                image: "first_date.jpg"
+            },
+            {
+                date: "2023-12-25",
+                title: "Christmas Together",
+                description: "Our first holiday, filled with love and warmth.",
+                image: "christmas.jpg"
+            },
+            {
+                date: "2024-06-15",
+                title: "First Anniversary",
+                description: "Celebrating one year of love and memories.",
+                image: "anniversary.jpg"
+            },
+            {
+                date: "2024-12-31",
+                title: "New Year's Eve",
+                description: "Ringing in the new year with a kiss.",
+                image: "new_year.jpg"
+            }
+        ];
+
         // Function to fetch and display events
         async function loadTimeline() {
             try {
-                // Replace with your JSON URL
-                const response = await fetch('https://raw.githubusercontent.com/aje-et/timeline/refs/heads/main/data/events.json');
-                const events = await response.json();
+                // Try fetching from your JSON URL
+                let events;
+                try {
+                    const response = await fetch('https://raw.githubusercontent.com/aje-et/timeline/refs/heads/main/data/events.json');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    events = await response.json();
+                } catch (fetchError) {
+                    console.warn('Failed to fetch JSON, using fallback data:', fetchError);
+                    events = fallbackData;
+                }
 
                 const timeline = document.getElementById('timeline');
                 timeline.innerHTML = ''; // Clear existing content
@@ -329,13 +298,29 @@
                         <div class="content">
                             <h2>${event.date}</h2>
                             <h3>${event.title}</h3>
-                            <p>${event.description}</p>
                             <img src="${imagePath}" alt="${event.title}">
+                            <p>${event.description}</p>
                         </div>
                     `;
                     
                     timeline.appendChild(eventDiv);
                 });
+
+                // Initialize Intersection Observer for scroll-based animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            // Unobserve after animation to improve performance
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.2 });
+
+                document.querySelectorAll('.event').forEach(event => {
+                    observer.observe(event);
+                });
+
             } catch (error) {
                 console.error('Error loading timeline:', error);
                 document.getElementById('timeline').innerHTML = '<p>Error loading events. Please try again later.</p>';
