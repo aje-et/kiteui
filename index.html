@@ -295,7 +295,7 @@
           const formattedDate = formatDate(event.date);
           
           timelineContent.innerHTML = `
-            <div class="timeline-date">${formattedDate}</div>
+            <div class="timeline-date">${event.date}</div>
             <h2 class="timeline-title">${event.title}</h2>
             ${event.image ? `<img src="images/${event.image}" alt="${event.title}" class="timeline-img">` : ''}
             <p class="timeline-description">${event.description}</p>
