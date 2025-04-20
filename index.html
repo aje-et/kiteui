@@ -255,7 +255,7 @@
 
       let events;
                 try {
-                    const response = await fetch('https://raw.githubusercontent.com/aje-et/timeline/refs/heads/main/data/eventsf.json');
+                    const response = await fetch('https://raw.githubusercontent.com/aje-et/timeline/refs/heads/main/data/events.json');
                     if (!response.ok) throw new Error('Network response was not ok');
                     events = await response.json();
                 } catch (fetchError) {
