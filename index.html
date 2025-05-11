@@ -239,17 +239,26 @@
                 const response = await fetch(`${BASE_URL}/api/url?code=${encodeURIComponent(code)}`);
                 const data = await response.json();
                 
-                // If URL is generated successfully, add a clickable link
-                if (data.status === 'success' && data.url) {
-                    data.clickableUrl = `<a href="${data.url}" target="_blank">Click here to open login URL</a>`;
-                }
-                
                 showResult('urlLoader', 'urlResult', data);
                 
-                // If there's a URL, make it clickable
+                // If there's a URL, create a button below the result
                 if (data.status === 'success' && data.url) {
-                    document.getElementById('urlResult').innerHTML = 
-                        JSON.stringify(data, null, 2).replace(/"url": "([^"]+)"/, '"url": "<a href="$1" target="_blank">$1</a>"');
+                    const resultElement = document.getElementById('urlResult');
+                    
+                    // Create a button for opening the URL
+                    const openUrlButton = document.createElement('button');
+                    openUrlButton.textContent = 'Open Login URL';
+                    openUrlButton.style.marginTop = '15px';
+                    openUrlButton.style.backgroundColor = 'var(--success-color)';
+                    
+                    // Set the click handler to open the URL in a new tab
+                    openUrlButton.addEventListener('click', () => {
+                        window.open(data.url, '_blank');
+                    });
+                    
+                    // Add the button below the result
+                    resultElement.appendChild(document.createElement('br'));
+                    resultElement.appendChild(openUrlButton);
                 }
             } catch (error) {
                 showResult('urlLoader', 'urlResult', { status: 'error', message: error.message }, true);
