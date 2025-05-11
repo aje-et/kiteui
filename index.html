@@ -229,11 +229,15 @@
         document.getElementById('urlBtn').addEventListener('click', async () => {
             showLoading('urlLoader', 'urlResult');
             
-            const code = document.getElementById('urlCode').value.trim();
+            const codeInput = document.getElementById('urlCode');
+            const code = codeInput.value.trim();
             if (!code) {
                 showResult('urlLoader', 'urlResult', { status: 'error', message: 'Access code is required' }, true);
                 return;
             }
+            
+            // Clear the input field after getting its value
+            codeInput.value = '';
             
             try {
                 const response = await fetch(`${BASE_URL}/api/url?code=${encodeURIComponent(code)}`);
@@ -269,8 +273,11 @@
         document.getElementById('tokenBtn').addEventListener('click', async () => {
             showLoading('tokenLoader', 'tokenResult');
             
-            const code = document.getElementById('tokenCode').value.trim();
-            const requestToken = document.getElementById('requestToken').value.trim();
+            const codeInput = document.getElementById('tokenCode');
+            const requestTokenInput = document.getElementById('requestToken');
+            
+            const code = codeInput.value.trim();
+            const requestToken = requestTokenInput.value.trim();
             
             if (!code) {
                 showResult('tokenLoader', 'tokenResult', { status: 'error', message: 'Access code is required' }, true);
@@ -281,6 +288,10 @@
                 showResult('tokenLoader', 'tokenResult', { status: 'error', message: 'Request token is required' }, true);
                 return;
             }
+            
+            // Clear the input fields after getting their values
+            codeInput.value = '';
+            requestTokenInput.value = '';
             
             try {
                 const response = await fetch(`${BASE_URL}/api/token?code=${encodeURIComponent(code)}&request_token=${encodeURIComponent(requestToken)}`);
