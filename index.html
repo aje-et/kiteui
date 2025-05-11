@@ -1,319 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ajeet 💕 Reena</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite App Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Montserrat', sans-serif;
-    }
-    
-    body {
-      background-color: #fdf6f6;
-      color: #4a4a4a;
-      padding: 20px;
-      overflow-x: hidden;
-      background-image: linear-gradient(to bottom, #fdf6f6, #f8e8e8);
-      min-height: 100vh;
-    }
-    
-    header {
-      text-align: center;
-      margin-bottom: 50px;
-      padding-top: 20px;
-    }
-    
-    h1 {
-      font-size: 3rem;
-      font-family: 'Dancing Script', cursive;
-      color: #d25a7e;
-      margin-bottom: 15px;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-    
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    
-    .timeline {
-      position: relative;
-      padding: 20px 0;
-    }
-    
-    .timeline::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 3px;
-      background: linear-gradient(to bottom, #e8a1ad, #d25a7e, #e8a1ad);
-      transform: translateX(-50%);
-      border-radius: 3px;
-    }
-    
-    .timeline-item {
-      margin-bottom: 40px;
-      position: relative;
-      width: 100%;
-      display: flex;
-    }
-    
-    .timeline-item.left-side {
-      justify-content: flex-start;
-    }
-    
-    .timeline-item.right-side {
-      justify-content: flex-end;
-    }
-    
-    .timeline-content {
-      width: 45%;
-      padding: 25px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(210, 90, 126, 0.15);
-      position: relative;
-      z-index: 1;
-      border: 1px solid rgba(232, 161, 173, 0.2);
-    }
-    
-    .timeline-item.left-side .timeline-content::after {
-      content: '';
-      position: absolute;
-      right: -15px;
-      top: 20px;
-      width: 0;
-      height: 0;
-      border-top: 15px solid transparent;
-      border-bottom: 15px solid transparent;
-      border-left: 15px solid white;
-    }
-    
-    .timeline-item.right-side .timeline-content::after {
-      content: '';
-      position: absolute;
-      left: -15px;
-      top: 20px;
-      width: 0;
-      height: 0;
-      border-top: 15px solid transparent;
-      border-bottom: 15px solid transparent;
-      border-right: 15px solid white;
-    }
-    
-    .timeline-content::before {
-      content: '♥';
-      position: absolute;
-      color: #e8a1ad;
-      font-size: 16px;
-      top: 18px;
-      z-index: 3;
-    }
-    
-    .timeline-item.left-side .timeline-content::before {
-      right: -28px;
-    }
-    
-    .timeline-item.right-side .timeline-content::before {
-      left: -28px;
-    }
-    
-    .timeline-date {
-      position: absolute;
-      top: 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #fff;
-      background: linear-gradient(to right, #e8a1ad, #d25a7e);
-      padding: 6px 14px;
-      border-radius: 20px;
-      z-index: 2;
-      box-shadow: 0 3px 8px rgba(210, 90, 126, 0.25);
-      letter-spacing: 0.5px;
-    }
-    
-    .timeline-item.left-side .timeline-date {
-      right: -120px;
-    }
-    
-    .timeline-item.right-side .timeline-date {
-      left: -120px;
-    }
-    
-    .timeline-title {
-      margin-bottom: 15px;
-      font-size: 1.4rem;
-      color: #d25a7e;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-    }
-    
-    .timeline-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 15px;
-    }
-    
-    .timeline-description {
-      line-height: 1.6;
-      color: #6a6a6a;
-      font-weight: 300;
-      font-size: 1.05rem;
-      font-family: 'Montserrat', sans-serif;
-    }
-    
-    .dot {
-      position: absolute;
-      top: 20px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #d25a7e;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1;
-      box-shadow: 0 0 0 4px rgba(232, 161, 173, 0.3);
-    }
-    
-    @media screen and (max-width: 768px) {
-      .timeline::before {
-        left: 50%;
-      }
-      
-      .timeline-item {
-        width: 100%;
-        margin-bottom: 60px;
-      }
-      
-      .timeline-content {
-        width: 80%;
-        margin: 0 auto;
-        padding-top: 30px; /* Add more padding at the top for the date */
-      }
-      
-      .timeline-item:nth-child(odd) .timeline-content::after,
-      .timeline-item:nth-child(even) .timeline-content::after {
-        display: none;
-      }
-      
-      .timeline-item:nth-child(odd) .timeline-date,
-      .timeline-item:nth-child(even) .timeline-date {
-        position: absolute;
-        left: 50%;
-        right: auto;
-        top: -25px;
-        transform: translateX(-50%);
-        display: inline-block;
-        margin-bottom: 0;
-        z-index: 3;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      
-      .dot {
-        left: 50%;
-      }
-    }
-    
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  </style>
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            white-space: pre-wrap;
+            overflow-x: auto;
+            display: none;
+        }
+
+        .success {
+            border-left-color: var(--success-color);
+        }
+
+        .error {
+            border-left-color: var(--error-color);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            button {
+                padding: 10px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>The timeline<h1>
-      <p>The journey of our hearts through time</p>
-    </header>
-    
+    <div class="container">
+        <header>
+            <h1>Kite App Dashboard</h1>
+            <p>Manage your Kite API integration</p>
+        </header>
 
-    
-    <div class="timeline" id="timeline-container"></div>
-  </div>
+        <!-- Status Card -->
+        <div class="card">
+            <h2>Check Server Status</h2>
+            <p>Verify if the Kite App server is running</p>
+            <button id="statusBtn">Check Status</button>
+            <div class="loader" id="statusLoader"></div>
+            <div class="result" id="statusResult"></div>
+        </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-      const timelineContainer = document.getElementById('timeline-container');
-      
-      // Sample data with base64 encoded SVG images - romantic theme
-      const sampleData = [
-        {
-          title: "The Day We Met",
-          date: "2018-04-15",
-          image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgODAwIDQwMCI+PHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlOGExYWQiIGZpbGwtb3BhY2l0eT0iMC43Ii8+PHRleHQgeD0iNDAwIiB5PSIyMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkZpcnN0IE1lZXRpbmc8L3RleHQ+PC9zdmc+",
-          description: "It was a sunny Sunday afternoon at the local coffee shop. Our eyes met across the room, and somehow I knew my life was about to change forever."
-        }
-      ];
+        <!-- Generate URL Card -->
+        <div class="card">
+            <h2>Generate Login URL</h2>
+            <p>Generate a Kite login URL</p>
+            <div class="form-group">
+                <label for="urlCode">Access Code:</label>
+                <input type="text" id="urlCode" placeholder="Enter access code">
+            </div>
+            <button id="urlBtn">Generate URL</button>
+            <div class="loader" id="urlLoader"></div>
+            <div class="result" id="urlResult"></div>
+        </div>
 
-      let events;
-                try {
-                    const response = await fetch('https://raw.githubusercontent.com/aje-et/timeline/refs/heads/main/data/events.json');
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    events = await response.json();
-                } catch (fetchError) {
-                    console.warn('Failed to fetch JSON, using fallback data:', fetchError);
-                    events = sampleData;
-                }
-      
-      // Sort events by date
-      const sortedEvents = [...events].sort((a, b) => {
-        return new Date(a.date) - new Date(b.date);
-      });
-      
-      // Generate timeline HTML
-      generateTimeline(sortedEvents);
-      
-      // Function to generate the timeline HTML
-      function generateTimeline(events) {
-        timelineContainer.innerHTML = '';
+        <!-- Generate Token Card -->
+        <div class="card">
+            <h2>Generate Access Token</h2>
+            <p>Generate a Kite access token using request token</p>
+            <div class="form-group">
+                <label for="tokenCode">Access Code:</label>
+                <input type="text" id="tokenCode" placeholder="Enter access code">
+            </div>
+            <div class="form-group">
+                <label for="requestToken">Request Token:</label>
+                <input type="text" id="requestToken" placeholder="Enter request token">
+            </div>
+            <button id="tokenBtn">Generate Token</button>
+            <div class="loader" id="tokenLoader"></div>
+            <div class="result" id="tokenResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for API calls - change this to match your server
+        const BASE_URL = 'https://kite-silver.onrender.com';
         
-        events.forEach((event, index) => {
-          const timelineItem = document.createElement('div');
-          timelineItem.className = 'timeline-item';
-          
-          // Add alternating class for desktop view
-          if (index % 2 === 0) {
-            timelineItem.classList.add('left-side');
-          } else {
-            timelineItem.classList.add('right-side');
-          }
-          
-          const dot = document.createElement('div');
-          dot.className = 'dot';
-          
-          const timelineContent = document.createElement('div');
-          timelineContent.className = 'timeline-content';
-          
-          const formattedDate = formatDate(event.date);
-          
-          timelineContent.innerHTML = `
-            <div class="timeline-date">${event.date}</div>
-            <h2 class="timeline-title">${event.title}</h2>
-            ${event.image ? `<img src="images/${event.image}" alt="${event.title}" class="timeline-img">` : ''}
-            <p class="timeline-description">${event.description}</p>
-          `;
-          
-          timelineItem.appendChild(dot);
-          timelineItem.appendChild(timelineContent);
-          timelineContainer.appendChild(timelineItem);
+        // Helper function to show loading state
+        function showLoading(loaderId, resultId) {
+            document.getElementById(loaderId).style.display = 'block';
+            document.getElementById(resultId).style.display = 'none';
+        }
+        
+        // Helper function to show result
+        function showResult(loaderId, resultId, data, isError = false) {
+            document.getElementById(loaderId).style.display = 'none';
+            const resultElement = document.getElementById(resultId);
+            resultElement.style.display = 'block';
+            resultElement.textContent = JSON.stringify(data, null, 2);
+            
+            if (isError) {
+                resultElement.classList.add('error');
+                resultElement.classList.remove('success');
+            } else {
+                resultElement.classList.add('success');
+                resultElement.classList.remove('error');
+            }
+        }
+
+        // Check Status Button
+        document.getElementById('statusBtn').addEventListener('click', async () => {
+            showLoading('statusLoader', 'statusResult');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/`);
+                const data = await response.json();
+                showResult('statusLoader', 'statusResult', data);
+            } catch (error) {
+                showResult('statusLoader', 'statusResult', { status: 'error', message: error.message }, true);
+            }
         });
-      }
-      
-      // Format date to be more readable
-      function formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString(undefined, options);
-      }
-    });
-  </script>
+
+        // Generate URL Button
+        document.getElementById('urlBtn').addEventListener('click', async () => {
+            showLoading('urlLoader', 'urlResult');
+            
+            const code = document.getElementById('urlCode').value.trim();
+            if (!code) {
+                showResult('urlLoader', 'urlResult', { status: 'error', message: 'Access code is required' }, true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/url?code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+                
+                // If URL is generated successfully, add a clickable link
+                if (data.status === 'success' && data.url) {
+                    data.clickableUrl = `<a href="${data.url}" target="_blank">Click here to open login URL</a>`;
+                }
+                
+                showResult('urlLoader', 'urlResult', data);
+                
+                // If there's a URL, make it clickable
+                if (data.status === 'success' && data.url) {
+                    document.getElementById('urlResult').innerHTML = 
+                        JSON.stringify(data, null, 2).replace(/"url": "([^"]+)"/, '"url": "<a href="$1" target="_blank">$1</a>"');
+                }
+            } catch (error) {
+                showResult('urlLoader', 'urlResult', { status: 'error', message: error.message }, true);
+            }
+        });
+
+        // Generate Token Button
+        document.getElementById('tokenBtn').addEventListener('click', async () => {
+            showLoading('tokenLoader', 'tokenResult');
+            
+            const code = document.getElementById('tokenCode').value.trim();
+            const requestToken = document.getElementById('requestToken').value.trim();
+            
+            if (!code) {
+                showResult('tokenLoader', 'tokenResult', { status: 'error', message: 'Access code is required' }, true);
+                return;
+            }
+            
+            if (!requestToken) {
+                showResult('tokenLoader', 'tokenResult', { status: 'error', message: 'Request token is required' }, true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/token?code=${encodeURIComponent(code)}&request_token=${encodeURIComponent(requestToken)}`);
+                const data = await response.json();
+                showResult('tokenLoader', 'tokenResult', data);
+            } catch (error) {
+                showResult('tokenLoader', 'tokenResult', { status: 'error', message: error.message }, true);
+            }
+        });
+    </script>
 </body>
 </html>
