@@ -155,6 +155,23 @@
             <div class="result" id="statusResult"></div>
         </div>
 
+        <!-- Set RP Card -->
+        <div class="card">
+            <h2>Set RP</h2>
+            <p>Set the RP for trading operations</p>
+            <div class="form-group">
+                <label for="rpCode">Access Code:</label>
+                <input type="text" id="rpCode" placeholder="Enter access code">
+            </div>
+            <div class="form-group">
+                <label for="referencePrice">RP:</label>
+                <input type="text" id="referencePrice" placeholder="Enter RP">
+            </div>
+            <button id="rpBtn">Set RP</button>
+            <div class="loader" id="rpLoader"></div>
+            <div class="result" id="rpResult"></div>
+        </div>
+
         <!-- Generate URL Card -->
         <div class="card">
             <h2>Generate Login URL</h2>
@@ -184,11 +201,13 @@
             <div class="loader" id="tokenLoader"></div>
             <div class="result" id="tokenResult"></div>
         </div>
+        
+
     </div>
 
     <script>
         // Base URL for API calls - change this to match your server
-        const BASE_URL = 'https://kite-silver.onrender.com';
+        const BASE_URL = 'fixpoint.up.railway.app';
         
         // Helper function to show loading state
         function showLoading(loaderId, resultId) {
@@ -299,6 +318,45 @@
                 showResult('tokenLoader', 'tokenResult', data);
             } catch (error) {
                 showResult('tokenLoader', 'tokenResult', { status: 'error', message: error.message }, true);
+            }
+        });
+        
+        // Set RP Button
+        document.getElementById('rpBtn').addEventListener('click', async () => {
+            showLoading('rpLoader', 'rpResult');
+            
+            const codeInput = document.getElementById('rpCode');
+            const rpInput = document.getElementById('referencePrice');
+            
+            const code = codeInput.value.trim();
+            const referencePrice = rpInput.value.trim();
+            
+            if (!code) {
+                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Access code is required' }, true);
+                return;
+            }
+            
+            if (!referencePrice) {
+                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Reference price is required' }, true);
+                return;
+            }
+            
+            if (isNaN(parseFloat(referencePrice))) {
+                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Reference price must be a number' }, true);
+                return;
+            }
+            
+            // Clear the input fields after getting their values
+            codeInput.value = '';
+            rpInput.value = '';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/rp?code=${encodeURIComponent(code)}&rp=${encodeURIComponent(parseFloat(referencePrice))}`);
+                
+                const data = await response.json();
+                showResult('rpLoader', 'rpResult', data);
+            } catch (error) {
+                showResult('rpLoader', 'rpResult', { status: 'error', message: error.message }, true);
             }
         });
     </script>
