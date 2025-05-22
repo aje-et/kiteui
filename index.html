@@ -207,7 +207,10 @@
 
     <script>
         // Base URL for API calls - change this to match your server
-        const BASE_URL = 'https://kite-gw6e.onrender.com';
+        // const BASE_URL = 'https://kite-gw6e.onrender.com';
+        const ACTUAL_SERVER = 'https://kite-gw6e.onrender.com';
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+        const BASE_URL = CORS_PROXY + ACTUAL_SERVER;
         
         // Helper function to show loading state
         function showLoading(loaderId, resultId) {
