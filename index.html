@@ -314,7 +314,14 @@
             document.getElementById(loaderId).style.display = 'none';
             const resultElement = document.getElementById(resultId);
             resultElement.style.display = 'block';
-            resultElement.textContent = JSON.stringify(data, null, 2);
+            
+            // Create a copy of the data to display, removing the URL if present
+            const displayData = {...data};
+            if (displayData.url) {
+                displayData.url = '[URL hidden - use button to access]';
+            }
+            
+            resultElement.textContent = JSON.stringify(displayData, null, 2);
             
             if (isError) {
                 resultElement.classList.add('error');
@@ -378,9 +385,9 @@
                     openUrlButton.style.marginTop = '15px';
                     openUrlButton.style.backgroundColor = 'var(--success-color)';
                     
-                    // Set the click handler to open the URL in a new tab
+                    // Set the click handler to open the URL in the same tab
                     openUrlButton.addEventListener('click', () => {
-                        window.open(data.url, '_blank');
+                        window.location.href = data.url;
                     });
                     
                     // Add the button below the result
