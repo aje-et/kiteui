@@ -122,6 +122,84 @@
             margin: 15px auto;
             display: none;
         }
+        
+        /* Dashboard styles */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .trade-card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .trade-card.buy {
+            border-left-color: var(--success-color);
+        }
+        
+        .trade-card.sell {
+            border-left-color: var(--error-color);
+        }
+        
+        .trade-card h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .trade-card p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .trade-card .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        .status.open {
+            background-color: #f0ad4e;
+            color: white;
+        }
+        
+        .status.complete {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .status.cancelled {
+            background-color: #777;
+            color: white;
+        }
+        
+        .success-message {
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            background-color: var(--error-color);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -202,12 +280,28 @@
             <div class="result" id="tokenResult"></div>
         </div>
         
+        <!-- Dashboard Card -->
+        <div class="card">
+            <h2>Trading Dashboard</h2>
+            <p>View your orders and positions</p>
+            <button id="dashboardBtn">Refresh Dashboard</button>
+            <div class="loader" id="dashboardLoader"></div>
+            
+            <div id="dashboardContent" style="display: none;">
+                <h3>Orders</h3>
+                <div id="ordersContainer" class="cards-container"></div>
+                
+                <h3>Positions</h3>
+                <div id="positionsContainer" class="cards-container"></div>
+            </div>
+        </div>
 
     </div>
 
     <script>
         // Base URL for API calls - change this to match your server
         const BASE_URL = 'https://kite-gw6e.onrender.com';
+        // const BASE_URL = 'http://127.0.0.1:5001/';
         
         // Helper function to show loading state
         function showLoading(loaderId, resultId) {
@@ -379,6 +473,108 @@
                 showResult('rpLoader', 'rpResult', { status: 'error', message: error.message }, true);
             }
         });
+        
+        // Dashboard Button
+        document.getElementById('dashboardBtn').addEventListener('click', async () => {
+            showLoading('dashboardLoader', 'dashboardContent');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                displayDashboard(data);
+                
+                // Hide loader and show dashboard content
+                document.getElementById('dashboardLoader').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+                // Show status message if available
+                if (data.status) {
+                    const statusElement = document.createElement('div');
+                    statusElement.className = data.status === 'success' ? 'success-message' : 'error-message';
+                    
+                    // Include both status and error message if available
+                    let statusText = `Status: ${data.status}`;
+                    if (data.message && data.status !== 'success') {
+                        statusText += ` - Error: ${data.message}`;
+                    }
+                    
+                    statusElement.textContent = statusText;
+                    document.getElementById('dashboardContent').prepend(statusElement);
+                    
+                    // Make error message disappear after 2 seconds
+                    if (data.status !== 'success') {
+                        setTimeout(() => {
+                            statusElement.remove();
+                        }, 2000);
+                    }
+                }
+            } catch (error) {
+                document.getElementById('dashboardLoader').style.display = 'none';
+                alert('Error loading dashboard: ' + error.message);
+            }
+        });
+        
+        // Function to display dashboard data
+        function displayDashboard(data) {
+            const ordersContainer = document.getElementById('ordersContainer');
+            const positionsContainer = document.getElementById('positionsContainer');
+            
+            // Clear previous content
+            ordersContainer.innerHTML = '';
+            positionsContainer.innerHTML = '';
+            
+            // Display orders
+            if (data.all_orders && data.all_orders.length > 0) {
+                data.all_orders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = `trade-card ${order.transaction_type.toLowerCase()}`;
+                    
+                    orderCard.innerHTML = `
+                        <h4>${order.tradingsymbol}</h4>
+                        <p><strong>${order.transaction_type}</strong> @ ₹${order.price}</p>
+                        <p>Quantity: ${order.quantity}</p>
+                        <span class="status ${order.status.toLowerCase()}">${order.status}</span>
+                    `;
+                    
+                    ordersContainer.appendChild(orderCard);
+                });
+            } else {
+                ordersContainer.innerHTML = '<p>No orders found</p>';
+            }
+            
+            // Display positions
+            if (data.symbol_positions && data.symbol_positions.length > 0) {
+                data.symbol_positions.forEach(position => {
+                    const positionCard = document.createElement('div');
+                    positionCard.className = 'trade-card';
+                    
+                    // Determine if it's a buy or sell position based on quantity
+                    if (position.quantity > 0) {
+                        positionCard.classList.add('buy');
+                    } else if (position.quantity < 0) {
+                        positionCard.classList.add('sell');
+                    }
+                    
+                    positionCard.innerHTML = `
+                        <h4>${position.tradingsymbol}</h4>
+                        <p>Avg Price: ₹${position.average_price}</p>
+                        <p>Quantity: ${position.quantity}</p>
+                        <p>Last Price: ₹${position.last_price}</p>
+                        <p>P&L: ₹${position.pnl}</p>
+                    `;
+                    
+                    positionsContainer.appendChild(positionCard);
+                });
+            } else {
+                positionsContainer.innerHTML = '<p>No positions found</p>';
+            }
+        }
     </script>
 </body>
 </html>
