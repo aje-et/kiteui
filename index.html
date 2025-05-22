@@ -200,6 +200,17 @@
             margin-bottom: 15px;
             font-weight: bold;
         }
+        
+        .tag-highlight {
+            display: inline-block;
+            background-color: #f1f8e9;
+            color: #9f3842;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            border-left: 3px solid #c34a76;
+            margin: 5px 0;
+        }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -553,28 +564,39 @@
             ordersContainer.innerHTML = '';
             positionsContainer.innerHTML = '';
             
-            // Display orders
-            if (data.all_orders && data.all_orders.length > 0) {
-                data.all_orders.forEach(order => {
-                    const orderCard = document.createElement('div');
-                    orderCard.className = `trade-card ${order.transaction_type.toLowerCase()}`;
-                    
-                    orderCard.innerHTML = `
-                        <h4>${order.tradingsymbol}</h4>
-                        <p><strong>${order.transaction_type}</strong> @ ₹${order.price}</p>
-                        <p>Quantity: ${order.quantity}</p>
-                        <span class="status ${order.status.toLowerCase()}">${order.status}</span>
-                    `;
-                    
-                    ordersContainer.appendChild(orderCard);
-                });
+            // Display orders (filter out CANCELLED orders)
+            if (data.orders && data.orders.length > 0) {
+                // Filter out orders with status 'CANCELLED'
+                const filteredOrders = data.orders.filter(order => order.status !== 'CANCELLED');
+                
+                if (filteredOrders.length > 0) {
+                    filteredOrders.forEach(order => {
+                        const orderCard = document.createElement('div');
+                        orderCard.className = `trade-card ${order.transaction_type.toLowerCase()}`;
+                        
+                        // Display the order timestamp as is since it's already in IST
+                        let orderTime = order.order_timestamp || 'N/A';
+                        
+                        orderCard.innerHTML = `
+                            <h4>${order.tradingsymbol}</h4>
+                            <p><strong>${order.transaction_type}</strong> @ ₹${order.price}</p>
+                            ${order.tag ? `<p class="tag-highlight">${order.tag}</p>` : ''}
+                            <p>Time: ${orderTime || 'N/A'}</p>
+                            <span class="status ${order.status.toLowerCase()}">${order.status}</span>
+                        `;
+                        
+                        ordersContainer.appendChild(orderCard);
+                    });
+                } else {
+                    ordersContainer.innerHTML = '<p>No active orders found</p>';
+                }
             } else {
                 ordersContainer.innerHTML = '<p>No orders found</p>';
             }
             
             // Display positions
-            if (data.symbol_positions && data.symbol_positions.length > 0) {
-                data.symbol_positions.forEach(position => {
+            if (data.positions && data.positions.length > 0) {
+                data.positions.forEach(position => {
                     const positionCard = document.createElement('div');
                     positionCard.className = 'trade-card';
                     
