@@ -303,6 +303,14 @@
         const BASE_URL = 'https://kite-gw6e.onrender.com';
         // const BASE_URL = 'http://127.0.0.1:5001/';
         
+        // Function to extract URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
         // Helper function to show loading state
         function showLoading(loaderId, resultId) {
             document.getElementById(loaderId).style.display = 'block';
@@ -399,13 +407,22 @@
             }
         });
 
+        // Set up request token auto-fill from URL
+        const requestTokenInput = document.getElementById('requestToken');
+        requestTokenInput.addEventListener('click', () => {
+            if (!requestTokenInput.value) {
+                const tokenFromUrl = getUrlParameter('request_token');
+                if (tokenFromUrl) {
+                    requestTokenInput.value = tokenFromUrl;
+                }
+            }
+        });
+        
         // Generate Token Button
         document.getElementById('tokenBtn').addEventListener('click', async () => {
             showLoading('tokenLoader', 'tokenResult');
             
             const codeInput = document.getElementById('tokenCode');
-            const requestTokenInput = document.getElementById('requestToken');
-            
             const code = codeInput.value.trim();
             const requestToken = requestTokenInput.value.trim();
             
