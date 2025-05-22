@@ -207,10 +207,7 @@
 
     <script>
         // Base URL for API calls - change this to match your server
-        // const BASE_URL = 'https://kite-gw6e.onrender.com';
-        const ACTUAL_SERVER = 'https://kite-gw6e.onrender.com';
-        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
-        const BASE_URL = CORS_PROXY + ACTUAL_SERVER;
+        const BASE_URL = 'https://kite-gw6e.onrender.com';
         
         // Helper function to show loading state
         function showLoading(loaderId, resultId) {
@@ -239,7 +236,12 @@
             showLoading('statusLoader', 'statusResult');
             
             try {
-                const response = await fetch(`${BASE_URL}/`);
+                const response = await fetch(BASE_URL + '/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const data = await response.json();
                 showResult('statusLoader', 'statusResult', data);
             } catch (error) {
@@ -262,7 +264,12 @@
             codeInput.value = '';
             
             try {
-                const response = await fetch(`${BASE_URL}/api/url?code=${encodeURIComponent(code)}`);
+                const response = await fetch(`${BASE_URL}/api/url?code=${encodeURIComponent(code)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const data = await response.json();
                 
                 showResult('urlLoader', 'urlResult', data);
@@ -316,7 +323,12 @@
             requestTokenInput.value = '';
             
             try {
-                const response = await fetch(`${BASE_URL}/api/token?code=${encodeURIComponent(code)}&request_token=${encodeURIComponent(requestToken)}`);
+                const response = await fetch(`${BASE_URL}/api/token?code=${encodeURIComponent(code)}&request_token=${encodeURIComponent(requestToken)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const data = await response.json();
                 showResult('tokenLoader', 'tokenResult', data);
             } catch (error) {
@@ -354,7 +366,12 @@
             rpInput.value = '';
             
             try {
-                const response = await fetch(`${BASE_URL}/api/rp?code=${encodeURIComponent(code)}&rp=${encodeURIComponent(parseFloat(referencePrice))}`);
+                const response = await fetch(`${BASE_URL}/api/rp?code=${encodeURIComponent(code)}&rp=${encodeURIComponent(parseFloat(referencePrice))}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
                 const data = await response.json();
                 showResult('rpLoader', 'rpResult', data);
