@@ -277,8 +277,13 @@
         <div class="card">
             <h2>Trading Dashboard</h2>
             <p>View your orders and positions</p>
+            <div class="form-group">
+                <label for="dashboardCode">Access Code:</label>
+                <input type="text" id="dashboardCode" placeholder="Enter access code">
+            </div>
             <button id="dashboardBtn">Refresh Dashboard</button>
             <div class="loader" id="dashboardLoader"></div>
+            <div class="result" id="dashboardResult"></div>
             
             <div id="dashboardContent" style="display: none;">
                 <h3>Orders</h3>
@@ -531,56 +536,26 @@
             }
         });
         
-        // Set RP Button
-        document.getElementById('rpBtn').addEventListener('click', async () => {
-            showLoading('rpLoader', 'rpResult');
-            
-            const codeInput = document.getElementById('rpCode');
-            const rpInput = document.getElementById('referencePrice');
-            
-            const code = codeInput.value.trim();
-            const referencePrice = rpInput.value.trim();
-            
-            if (!code) {
-                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Access code is required' }, true);
-                return;
-            }
-            
-            if (!referencePrice) {
-                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Reference price is required' }, true);
-                return;
-            }
-            
-            if (isNaN(parseFloat(referencePrice))) {
-                showResult('rpLoader', 'rpResult', { status: 'error', message: 'Reference price must be a number' }, true);
-                return;
-            }
-            
-            // Clear the input fields after getting their values
-            codeInput.value = '';
-            rpInput.value = '';
-            
-            try {
-                const response = await fetch(`${BASE_URL}/api/rp?code=${encodeURIComponent(code)}&rp=${encodeURIComponent(parseFloat(referencePrice))}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                showResult('rpLoader', 'rpResult', data);
-            } catch (error) {
-                showResult('rpLoader', 'rpResult', { status: 'error', message: error.message }, true);
-            }
-        });
+        // RP functionality has been removed
         
         // Dashboard Button
         document.getElementById('dashboardBtn').addEventListener('click', async () => {
+            showLoading('dashboardLoader', 'dashboardResult');
             showLoading('dashboardLoader', 'dashboardContent');
             
+            const codeInput = document.getElementById('dashboardCode');
+            const code = codeInput.value.trim();
+            
+            if (!code) {
+                showResult('dashboardLoader', 'dashboardResult', { status: 'error', message: 'Access code is required' }, true);
+                return;
+            }
+            
+            // Clear the input field after getting its value
+            codeInput.value = '';
+            
             try {
-                const response = await fetch(`${BASE_URL}/api/dashboard`, {
+                const response = await fetch(`${BASE_URL}/api/dashboard?code=${encodeURIComponent(code)}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -588,36 +563,29 @@
                 });
                 
                 const data = await response.json();
-                displayDashboard(data);
+                showResult('dashboardLoader', 'dashboardResult', data);
                 
-                // Hide loader and show dashboard content
-                document.getElementById('dashboardLoader').style.display = 'none';
-                document.getElementById('dashboardContent').style.display = 'block';
-                
-                // Show status message if available
-                if (data.status) {
+                if (data.status === 'success') {
+                    // Display the dashboard data
+                    displayDashboard(data);
+                    
+                    // Show dashboard content
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    
+                    // Add success message
                     const statusElement = document.createElement('div');
-                    statusElement.className = data.status === 'success' ? 'success-message' : 'error-message';
-                    
-                    // Include both status and error message if available
-                    let statusText = `Status: ${data.status}`;
-                    if (data.message && data.status !== 'success') {
-                        statusText += ` - Error: ${data.message}`;
-                    }
-                    
-                    statusElement.textContent = statusText;
+                    statusElement.className = 'success-message';
+                    statusElement.textContent = 'Dashboard data loaded successfully';
                     document.getElementById('dashboardContent').prepend(statusElement);
                     
-                    // Make error message disappear after 2 seconds
-                    if (data.status !== 'success') {
-                        setTimeout(() => {
-                            statusElement.remove();
-                        }, 2000);
-                    }
+                    // Make success message disappear after 2 seconds
+                    setTimeout(() => {
+                        statusElement.remove();
+                    }, 2000);
                 }
             } catch (error) {
                 document.getElementById('dashboardLoader').style.display = 'none';
-                alert('Error loading dashboard: ' + error.message);
+                showResult('dashboardLoader', 'dashboardResult', { status: 'error', message: error.message }, true);
             }
         });
         
