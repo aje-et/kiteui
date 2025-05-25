@@ -61,6 +61,23 @@
         .form-group {
             margin-bottom: 15px;
         }
+        
+        #updateConfigForm {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        #updateConfigForm h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        #updateConfigBtn {
+            margin-top: 10px;
+        }
 
         label {
             display: block;
@@ -68,12 +85,24 @@
             font-weight: 600;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="number"],
+        select.form-control {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            margin-bottom: 10px;
+            background-color: white;
+            color: var(--text-color);
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
         }
 
         button {
@@ -244,21 +273,20 @@
             <div class="result" id="statusResult"></div>
         </div>
 
-        <!-- Set RP Card -->
+        <!-- Dashboard Card -->
         <div class="card">
-            <h2>Set RP</h2>
-            <p>Set the RP for trading operations</p>
-            <div class="form-group">
-                <label for="rpCode">Access Code:</label>
-                <input type="text" id="rpCode" placeholder="Enter access code">
+            <h2>Trading Dashboard</h2>
+            <p>View your orders and positions</p>
+            <button id="dashboardBtn">Refresh Dashboard</button>
+            <div class="loader" id="dashboardLoader"></div>
+            
+            <div id="dashboardContent" style="display: none;">
+                <h3>Orders</h3>
+                <div id="ordersContainer" class="cards-container"></div>
+                
+                <h3>Positions</h3>
+                <div id="positionsContainer" class="cards-container"></div>
             </div>
-            <div class="form-group">
-                <label for="referencePrice">RP:</label>
-                <input type="text" id="referencePrice" placeholder="Enter RP">
-            </div>
-            <button id="rpBtn">Set RP</button>
-            <div class="loader" id="rpLoader"></div>
-            <div class="result" id="rpResult"></div>
         </div>
 
         <!-- Generate URL Card -->
@@ -290,20 +318,55 @@
             <div class="loader" id="tokenLoader"></div>
             <div class="result" id="tokenResult"></div>
         </div>
-        
-        <!-- Dashboard Card -->
+
+
+        <!-- Trade Configurations Card -->
         <div class="card">
-            <h2>Trading Dashboard</h2>
-            <p>View your orders and positions</p>
-            <button id="dashboardBtn">Refresh Dashboard</button>
-            <div class="loader" id="dashboardLoader"></div>
+            <h2>Trade Configurations</h2>
+            <p>View and update your trade configurations</p>
+            <div class="form-group">
+                <label for="tcCode">Access Code:</label>
+                <input type="text" id="tcCode" placeholder="Enter access code">
+            </div>
+            <button id="tcBtn">Get Configurations</button>
+            <div class="loader" id="tcLoader"></div>
+            <div class="result" id="tcResult"></div>
             
-            <div id="dashboardContent" style="display: none;">
-                <h3>Orders</h3>
-                <div id="ordersContainer" class="cards-container"></div>
-                
-                <h3>Positions</h3>
-                <div id="positionsContainer" class="cards-container"></div>
+            <!-- Trade Configurations List -->
+            <div id="tradeConfigsList" style="display: none; margin-top: 20px;">
+                <h3>Your Trade Configurations</h3>
+                <div class="cards-container" id="configCards"></div>
+            </div>
+            
+            <!-- Update Configuration Form -->
+            <div id="updateConfigForm" style="display: none; margin-top: 20px;">
+                <h3>Update Configuration</h3>
+                <div class="form-group">
+                    <label for="configSelect">Select Configuration:</label>
+                    <select id="configSelect" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label for="updateRP">Reference Price (RP):</label>
+                    <input type="number" id="updateRP" placeholder="Enter new RP value" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="updateQuantity">Quantity:</label>
+                    <input type="number" id="updateQuantity" placeholder="Enter quantity" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="updateFixPoint">Fix Point:</label>
+                    <input type="number" id="updateFixPoint" placeholder="Enter fix point" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="updateEnabled">Enabled:</label>
+                    <select id="updateEnabled" class="form-control">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <button id="updateConfigBtn">Update Configuration</button>
+                <div class="loader" id="updateConfigLoader"></div>
+                <div class="result" id="updateConfigResult"></div>
             </div>
         </div>
 
@@ -311,8 +374,11 @@
 
     <script>
         // Base URL for API calls - change this to match your server
-        const BASE_URL = 'https://kite-gw6e.onrender.com';
-        // const BASE_URL = 'http://127.0.0.1:5001/';
+        // const BASE_URL = 'https://kite-gw6e.onrender.com';
+        const BASE_URL = 'http://127.0.0.1:5001/';
+        
+        // Store trade configurations globally
+        let tradeConfigurations = [];
         
         // Function to extract URL parameters
         function getUrlParameter(name) {
@@ -621,6 +687,36 @@
                 positionsContainer.innerHTML = '<p>No positions found</p>';
             }
         }
+        
+        // Helper function to show loading state
+        function showLoading(loaderId, resultId) {
+            document.getElementById(loaderId).style.display = 'block';
+            document.getElementById(resultId).style.display = 'none';
+        }
+        
+        // Helper function to show result
+        function showResult(loaderId, resultId, data, isError = false) {
+            document.getElementById(loaderId).style.display = 'none';
+            const resultElement = document.getElementById(resultId);
+            resultElement.style.display = 'block';
+            
+            // Create a copy of the data to display, removing the URL if present
+            const displayData = {...data};
+            if (displayData.url) {
+                displayData.url = '[URL hidden - use button to access]';
+            }
+            
+            resultElement.textContent = JSON.stringify(displayData, null, 2);
+            
+            if (isError) {
+                resultElement.classList.add('error');
+                resultElement.classList.remove('success');
+            } else {
+                resultElement.classList.add('success');
+                resultElement.classList.remove('error');
+            }
+        }
     </script>
+    <script src="trade_config.js"></script>
 </body>
 </html>
