@@ -563,9 +563,12 @@
                 });
                 
                 const data = await response.json();
-                showResult('dashboardLoader', 'dashboardResult', data);
                 
                 if (data.status === 'success') {
+                    // Hide the loader and result div
+                    document.getElementById('dashboardLoader').style.display = 'none';
+                    document.getElementById('dashboardResult').style.display = 'none';
+                    
                     // Display the dashboard data
                     displayDashboard(data);
                     
@@ -582,6 +585,9 @@
                     setTimeout(() => {
                         statusElement.remove();
                     }, 2000);
+                } else {
+                    document.getElementById('dashboardLoader').style.display = 'none';
+                    showResult('dashboardLoader', 'dashboardResult', data, true);
                 }
             } catch (error) {
                 document.getElementById('dashboardLoader').style.display = 'none';
@@ -591,6 +597,8 @@
         
         // Function to display dashboard data
         function displayDashboard(data) {
+            console.log('Dashboard data received:', data);
+            
             const ordersContainer = document.getElementById('ordersContainer');
             const positionsContainer = document.getElementById('positionsContainer');
             
@@ -599,9 +607,15 @@
             positionsContainer.innerHTML = '';
             
             // Display orders (filter out CANCELLED orders)
-            if (data.orders && data.orders.length > 0) {
+            if (data.orders) {
+                console.log('Orders data:', data.orders);
+                
+                // Ensure orders is an array
+                let ordersArray = Array.isArray(data.orders) ? data.orders : [];
+                
                 // Filter out orders with status 'CANCELLED'
-                const filteredOrders = data.orders.filter(order => order.status !== 'CANCELLED');
+                const filteredOrders = ordersArray.filter(order => order.status !== 'CANCELLED');
+                console.log('Filtered orders:', filteredOrders);
                 
                 if (filteredOrders.length > 0) {
                     filteredOrders.forEach(order => {
@@ -628,29 +642,45 @@
                 ordersContainer.innerHTML = '<p>No orders found</p>';
             }
             
-            // Display positions
-            if (data.positions && data.positions.length > 0) {
-                data.positions.forEach(position => {
-                    const positionCard = document.createElement('div');
-                    positionCard.className = 'trade-card';
-                    
-                    // Determine if it's a buy or sell position based on quantity
-                    if (position.quantity > 0) {
-                        positionCard.classList.add('buy');
-                    } else if (position.quantity < 0) {
-                        positionCard.classList.add('sell');
-                    }
-                    
-                    positionCard.innerHTML = `
-                        <h4>${position.tradingsymbol}</h4>
-                        <p>Avg Price: ₹${position.average_price}</p>
-                        <p>Quantity: ${position.quantity}</p>
-                        <p>Last Price: ₹${position.last_price}</p>
-                        <p>P&L: ₹${position.pnl}</p>
-                    `;
-                    
-                    positionsContainer.appendChild(positionCard);
-                });
+            // Display positions - handle nested structure from Kite API
+            if (data.positions) {
+                console.log('Positions data:', data.positions);
+                
+                // Check if positions is an object with day, net properties (Kite API structure)
+                let positionsArray = [];
+                if (data.positions.net && Array.isArray(data.positions.net)) {
+                    positionsArray = data.positions.net;
+                    console.log('Using positions.net array');
+                } else if (Array.isArray(data.positions)) {
+                    positionsArray = data.positions;
+                    console.log('Using positions array directly');
+                }
+                
+                if (positionsArray.length > 0) {
+                    positionsArray.forEach(position => {
+                        const positionCard = document.createElement('div');
+                        positionCard.className = 'trade-card';
+                        
+                        // Determine if it's a buy or sell position based on quantity
+                        if (position.quantity > 0) {
+                            positionCard.classList.add('buy');
+                        } else if (position.quantity < 0) {
+                            positionCard.classList.add('sell');
+                        }
+                        
+                        positionCard.innerHTML = `
+                            <h4>${position.tradingsymbol}</h4>
+                            <p>Avg Price: ₹${position.average_price}</p>
+                            <p>Quantity: ${position.quantity}</p>
+                            <p>Last Price: ₹${position.last_price}</p>
+                            <p>P&L: ₹${position.pnl}</p>
+                        `;
+                        
+                        positionsContainer.appendChild(positionCard);
+                    });
+                } else {
+                    positionsContainer.innerHTML = '<p>No positions found</p>';
+                }
             } else {
                 positionsContainer.innerHTML = '<p>No positions found</p>';
             }
