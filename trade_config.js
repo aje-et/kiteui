@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get Trade Configurations functionality
     document.getElementById('tcBtn').addEventListener('click', function() {
-        const tcCode = document.getElementById('tcCode').value;
+        const tcCodeInput = document.getElementById('tcCode');
+        const tcCode = tcCodeInput.value;
         const tcLoader = document.getElementById('tcLoader');
         const tcResult = document.getElementById('tcResult');
         const tradeConfigsList = document.getElementById('tradeConfigsList');
@@ -15,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please enter an access code');
             return;
         }
+        
+        // Clear the input field after getting its value
+        tcCodeInput.value = '';
         
         tcLoader.style.display = 'block';
         tcResult.style.display = 'none';
@@ -63,7 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const enabled = document.getElementById('updateEnabled').value;
         const updateConfigLoader = document.getElementById('updateConfigLoader');
         const updateConfigResult = document.getElementById('updateConfigResult');
-        const tcCode = document.getElementById('tcCode').value;
+        const tcCodeInput = document.getElementById('tcCode');
+        const tcCode = tcCodeInput.value;
         
         if (!configId) {
             alert('Please select a configuration to update');
@@ -74,6 +79,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please enter an access code');
             return;
         }
+        
+        // Clear the input field after getting its value
+        tcCodeInput.value = '';
         
         updateConfigLoader.style.display = 'block';
         updateConfigResult.style.display = 'none';
