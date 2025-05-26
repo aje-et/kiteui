@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const updateConfigForm = document.getElementById('updateConfigForm');
         
         if (!tcCode) {
-            alert('Please enter an access code');
+            tcResult.style.display = 'block'; tcResult.innerHTML = '<div class="error-message">Error: Access code is required</div>';
             return;
         }
         
@@ -71,12 +71,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const tcCode = tcCodeInput.value;
         
         if (!configId) {
-            alert('Please select a configuration to update');
+            tcResult.style.display = 'block'; tcResult.innerHTML = '<div class="error-message">Error: Configuration ID is required</div>';
             return;
         }
         
         if (!tcCode) {
-            alert('Please enter an access code');
+            tcResult.style.display = 'block'; tcResult.innerHTML = '<div class="error-message">Error: Access code is required</div>';
             return;
         }
         
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (rp) updateData.rp = parseFloat(rp);
         if (quantity) updateData.quantity = parseInt(quantity, 10);
-        if (fixPoint) updateData.fix_point = fixPoint;
+        if (fixPoint) updateData.fix_point = parseFloat(fixPoint);
         if (enabled) updateData.enabled = enabled === 'true';
         
         // Make the API call to update the configuration
