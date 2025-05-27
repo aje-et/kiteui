@@ -133,7 +133,7 @@
         }
 
         table {
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
             margin: 20px auto;
             background-color: white;
@@ -258,6 +258,7 @@
                         <tr>
                             <th>Lot Count</th>
                             <th>Price</th>
+                            <th>Gap Point</th>
                             <th>Loss Margin</th>
                             <th>Total Amount</th>
                         </tr>
@@ -267,7 +268,7 @@
                     </tbody>
                     <tfoot>
                         <tr class="total-row">
-                            <td colspan="2">Totals</td>
+                            <td colspan="3">Totals</td>
                             <td id="totalMargin">0</td>
                             <td id="totalAmount">0</td>
                         </tr>
@@ -281,8 +282,8 @@
 
     <script>
         // Base URL for API calls
-        const BASE_URL = 'https://kite-gw6e.onrender.com';
-        // const BASE_URL = 'http://127.0.0.1:5001/';
+        // const BASE_URL = 'https://kite-gw6e.onrender.com';
+        const BASE_URL = 'http://127.0.0.1:5001/';
 
         document.addEventListener('DOMContentLoaded', function() {
             // Set up event listener for calculate button
@@ -342,9 +343,10 @@
                 
                 row.innerHTML = `
                     <td>${item.lot_count}</td>
-                    <td>${item.price.toLocaleString()}</td>
-                    <td>${item.loss_margin.toLocaleString()}</td>
-                    <td>${item.total_amount.toLocaleString()}</td>
+                    <td>${item.price.toLocaleString('en-IN')}</td>
+                    <td>${item.gap_point.toLocaleString('en-IN')}</td>
+                    <td>${item.loss_margin.toLocaleString('en-IN')}</td>
+                    <td>${item.total_amount.toLocaleString('en-IN')}</td>
                 `;
                 
                 tableBody.appendChild(row);
@@ -355,8 +357,8 @@
             });
             
             // Update totals
-            document.getElementById('totalMargin').textContent = totalMargin.toLocaleString();
-            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
+            document.getElementById('totalMargin').textContent = totalMargin.toLocaleString('en-IN');
+            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString('en-IN');
             
             // Show the table
             document.getElementById('resultTable').style.display = 'block';
