@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite App Calculations</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            background-color: white;
+            color: var(--text-color);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            white-space: pre-wrap;
+            overflow-x: auto;
+            display: none;
+        }
+
+        .success {
+            border-left-color: var(--success-color);
+        }
+
+        .error {
+            border-left-color: var(--error-color);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+            display: none;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #e8f4fd;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        #resultTable {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            button {
+                padding: 10px 15px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Margin Calculations</h1>
+            <p>Calculate margin requirements for different price levels</p>
+        </header>
+
+        <!-- Calculation Form Card -->
+        <div class="card">
+            <h2>Calculation Parameters</h2>
+            <p>Enter the parameters to calculate margin requirements</p>
+            
+            <div class="form-group">
+                <label for="start">Start Price:</label>
+                <input type="number" id="start" value="95000">
+            </div>
+            
+            <div class="form-group">
+                <label for="end">End Price:</label>
+                <input type="number" id="end" value="84000">
+            </div>
+            
+            <div class="form-group">
+                <label for="fixPoint">Fix Point:</label>
+                <input type="number" id="fixPoint" value="1000">
+            </div>
+            
+            <div class="form-group">
+                <label for="stepPoint">Step Point:</label>
+                <input type="number" id="stepPoint" value="100">
+            </div>
+            
+            <div class="form-group">
+                <label for="lotSize">Lot Size:</label>
+                <input type="number" id="lotSize" value="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="lotPrice">Lot Price:</label>
+                <input type="number" id="lotPrice" value="16000">
+            </div>
+            
+            <button id="calculateBtn">Calculate</button>
+            <div class="loader" id="calculationLoader"></div>
+            
+            <!-- Results Table -->
+            <div id="resultTable">
+                <h3 style="margin-top: 20px;">Calculation Results</h3>
+                <table id="calculationTable">
+                    <thead>
+                        <tr>
+                            <th>Lot Count</th>
+                            <th>Price</th>
+                            <th>Loss Margin</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calculationTableBody">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="2">Totals</td>
+                            <td id="totalMargin">0</td>
+                            <td id="totalAmount">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        // Base URL for API calls
+        const BASE_URL = 'https://kite-gw6e.onrender.com';
+        // const BASE_URL = 'http://127.0.0.1:5001/';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listener for calculate button
+            document.getElementById('calculateBtn').addEventListener('click', handleCalculation);
+        });
+
+        async function handleCalculation() {
+            const start = parseInt(document.getElementById('start').value);
+            const end = parseInt(document.getElementById('end').value);
+            const fixPoint = parseInt(document.getElementById('fixPoint').value);
+            const stepPoint = parseInt(document.getElementById('stepPoint').value);
+            const lotSize = parseInt(document.getElementById('lotSize').value);
+            const lotPrice = parseInt(document.getElementById('lotPrice').value);
+
+            // Show loader
+            document.getElementById('calculationLoader').style.display = 'block';
+            document.getElementById('resultTable').style.display = 'none';
+
+            try {
+                // Build URL with query parameters
+                const url = new URL(BASE_URL + '/api/calculations');
+                url.searchParams.append('start', start);
+                url.searchParams.append('end', end);
+                url.searchParams.append('fix_point', fixPoint);
+                url.searchParams.append('step_point', stepPoint);
+                url.searchParams.append('lot_size', lotSize);
+                url.searchParams.append('lot_price', lotPrice);
+                
+                const response = await fetch(url);
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    displayResults(result.data);
+                } else {
+                    alert('Error calculating results: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to calculate: ' + error.message);
+            } finally {
+                // Hide loader
+                document.getElementById('calculationLoader').style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const tableBody = document.getElementById('calculationTableBody');
+            tableBody.innerHTML = '';
+            
+            let totalMargin = 0;
+            let totalAmount = 0;
+            
+            // Populate table with data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${item.lot_count}</td>
+                    <td>${item.price.toLocaleString()}</td>
+                    <td>${item.loss_margin.toLocaleString()}</td>
+                    <td>${item.total_amount.toLocaleString()}</td>
+                `;
+                
+                tableBody.appendChild(row);
+                
+                // Keep track of the last values for totals
+                totalMargin = item.loss_margin;
+                totalAmount = item.total_amount;
+            });
+            
+            // Update totals
+            document.getElementById('totalMargin').textContent = totalMargin.toLocaleString();
+            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
+            
+            // Show the table
+            document.getElementById('resultTable').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
