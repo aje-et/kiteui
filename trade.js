@@ -423,6 +423,7 @@ async function handleUpdateConfig() {
     const rp = document.getElementById('updateRP').value.trim();
     const executionSide = document.getElementById('updateExecutionSide').value;
     const fixPoint = document.getElementById('updateFixPoint').value.trim();
+    const stepPoint = document.getElementById('updateStepPoint').value.trim();
     const initiateTradeAtZero = document.getElementById('updateInitiateTradeAtZero').value;
     const quantity = document.getElementById('updateQuantity').value.trim();
     const enabled = document.getElementById('updateEnabled').value;
@@ -450,6 +451,7 @@ async function handleUpdateConfig() {
     if (rp) updateData.rp = parseFloat(rp);
     if (executionSide) updateData.execution_side = executionSide;
     if (fixPoint) updateData.fix_point = parseFloat(fixPoint);
+    if (stepPoint) updateData.step_point = parseFloat(stepPoint);
     if (initiateTradeAtZero) updateData.initiate_trade_at_zero = initiateTradeAtZero === 'true';
     if (quantity) updateData.quantity = parseInt(quantity, 10);
     if (enabled) updateData.enabled = enabled === 'true';
@@ -526,6 +528,7 @@ function displayTradeConfigurations(configs) {
             <p>RP: <strong>${config.rp}</strong></p>
             <p>Execution Side: ${config.execution_side || 'N/A'}</p>
             <p>Fix Point: ${config.fix_point || 'N/A'}</p>
+            <p>Step Point: ${config.step_point || 'N/A'}</p>
             <p>Strategy: ${config.strategy || 'N/A'}</p>
             <p>Initiate Trade At Zero: ${config.initiate_trade_at_zero ? 'Yes' : 'No'}</p>
             <p><span class="status ${config.enabled ? 'open' : 'cancelled'}">${config.enabled ? 'Enabled' : 'Disabled'}</span></p>
@@ -568,6 +571,7 @@ function updateFormForSelectedConfig(configId) {
         document.getElementById('updateRP').value = config.rp || '';
         document.getElementById('updateExecutionSide').value = config.execution_side || 'buy_sell_both';
         document.getElementById('updateFixPoint').value = config.fix_point || '';
+        document.getElementById('updateStepPoint').value = config.step_point || '';
         document.getElementById('updateInitiateTradeAtZero').value = config.initiate_trade_at_zero ? 'true' : 'false';
         document.getElementById('updateQuantity').value = config.quantity || '';
         document.getElementById('updateEnabled').value = config.enabled ? 'true' : 'false';
