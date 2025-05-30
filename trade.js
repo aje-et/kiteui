@@ -281,12 +281,13 @@ function displayDashboard(data) {
                 
                 // Display the order timestamp as is since it's already in IST
                 let orderTime = order.order_timestamp || 'N/A';
+                orderTime = orderTime.replace(' GMT', '');
                 
                 orderCard.innerHTML = `
                     <h4>${order.tradingsymbol}</h4>
                     <p><strong>${order.transaction_type}</strong> @ ₹${order.price}</p>
+                    <p>${orderTime || 'N/A'}</p>
                     ${order.tag ? `<p class="tag-highlight">${order.tag}</p>` : ''}
-                    <p>Time: ${orderTime || 'N/A'}</p>
                     <span class="status ${order.status.toLowerCase()}">${order.status}</span>
                 `;
                 
@@ -328,7 +329,7 @@ function displayDashboard(data) {
                 positionCard.innerHTML = `
                     <h4>${position.tradingsymbol}</h4>
                     <p>Avg Price: ₹${position.average_price}</p>
-                    <p>Quantity: ${position.quantity}</p>
+                    <p>Lot Quantity: ${position.quantity}</p>
                     <p>Last Price: ₹${position.last_price}</p>
                     <p>P&L: ₹${position.pnl}</p>
                 `;
@@ -524,11 +525,11 @@ function displayTradeConfigurations(configs) {
         let cardContent = `
             <p><span class="tag-highlight">${config.tradingsymbol} : ${config.exchange || 'N/A'}</span></p>
             <p>Lot Size: ${config.lot_size || 'N/A'}</p>
-            <p>Quantity: ${config.quantity || 'N/A'}</p>
+            <p>Lot Quantity: ${config.quantity}</p>
             <p>RP: <strong>${config.rp}</strong></p>
             <p>Execution Side: ${config.execution_side || 'N/A'}</p>
-            <p>Fix Point: ${config.fix_point || 'N/A'}</p>
-            <p>Step Point: ${config.step_point || 'N/A'}</p>
+            <p>Fix Point: ${config.fix_point}</p>
+            <p>Step Point: ${config.step_point}</p>
             <p>Strategy: ${config.strategy || 'N/A'}</p>
             <p>Initiate Trade At Zero: ${config.initiate_trade_at_zero ? 'Yes' : 'No'}</p>
             <p><span class="status ${config.enabled ? 'open' : 'cancelled'}">${config.enabled ? 'Enabled' : 'Disabled'}</span></p>
