@@ -33,6 +33,16 @@ function setupEventListeners() {
     
     // Update Configuration Button
     document.getElementById('updateConfigBtn').addEventListener('click', handleUpdateConfig);
+    
+    // Close Modal Button
+    document.getElementById('closeModal').addEventListener('click', closeConfigModal);
+    
+    // Close modal when clicking outside
+    document.getElementById('configModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeConfigModal();
+        }
+    });
 }
 
 // Function to extract URL parameters
@@ -351,7 +361,6 @@ async function handleTradeConfigRequest() {
     const tcCodeInput = document.getElementById('tcCode');
     const tcCode = tcCodeInput.value.trim();
     const tradeConfigsList = document.getElementById('tradeConfigsList');
-    const updateConfigForm = document.getElementById('updateConfigForm');
     
     if (!tcCode) {
         showResult('tcLoader', 'tcResult', { status: 'error', message: 'Access code is required' }, true);
@@ -363,7 +372,6 @@ async function handleTradeConfigRequest() {
     
     // Hide related containers
     tradeConfigsList.style.display = 'none';
-    updateConfigForm.style.display = 'none';
     
     try {
         const response = await fetch(`${BASE_URL}/api/trade_config?code=${encodeURIComponent(tcCode)}`, {
@@ -388,9 +396,8 @@ async function handleTradeConfigRequest() {
             // Populate the dropdown for updating
             populateConfigDropdown(window.tradeConfigurations);
             
-            // Show the trade configs list and update form
+            // Show the trade configs list
             tradeConfigsList.style.display = 'block';
-            updateConfigForm.style.display = 'block';
             
             // Add a temporary success message at the top of the trade configs list
             const statusElement = document.createElement('div');
@@ -415,50 +422,59 @@ async function handleTradeConfigRequest() {
         }, true);
     }
 }
-
-// Handle update configuration
 async function handleUpdateConfig() {
     showLoading('updateConfigLoader', 'updateConfigResult');
     
-    const configId = document.getElementById('configSelect').value;
-    const rp = document.getElementById('updateRP').value.trim();
+    // Get selected configuration ID
+    const configSelect = document.getElementById('configSelect');
+    const configId = configSelect.value;
+    
+    // Get form values
+    const rp = document.getElementById('updateRP').value;
     const executionSide = document.getElementById('updateExecutionSide').value;
-    const fixPoint = document.getElementById('updateFixPoint').value.trim();
-    const stepPoint = document.getElementById('updateStepPoint').value.trim();
-    const initiateTradeAtZero = document.getElementById('updateInitiateTradeAtZero').value;
-    const quantity = document.getElementById('updateQuantity').value.trim();
-    const enabled = document.getElementById('updateEnabled').value;
-    const tcCodeInput = document.getElementById('tcCode');
-    const tcCode = tcCodeInput.value.trim();
+    const fixPoint = document.getElementById('updateFixPoint').value;
+    const stepPoint = document.getElementById('updateStepPoint').value;
+    const initiateTradeAtZero = document.getElementById('updateInitiateTradeAtZero').value === 'true';
+    const quantity = document.getElementById('updateQuantity').value;
+    const enabled = document.getElementById('updateEnabled').value === 'true';
     
+    // Validate inputs
     if (!configId) {
-        showResult('updateConfigLoader', 'updateConfigResult', { status: 'error', message: 'Configuration ID is required' }, true);
+        showResult('updateConfigLoader', 'updateConfigResult', {
+            status: 'error',
+            message: 'Configuration ID is required'
+        }, true);
         return;
     }
     
-    if (!tcCode) {
-        showResult('updateConfigLoader', 'updateConfigResult', { status: 'error', message: 'Access code is required' }, true);
+    // Get access code from the modal
+    const modalAccessCodeInput = document.getElementById('modalAccessCode');
+    const accessCode = modalAccessCodeInput.value.trim();
+    
+    if (!accessCode) {
+        showResult('updateConfigLoader', 'updateConfigResult', {
+            status: 'error',
+            message: 'Access code is required'
+        }, true);
         return;
     }
-    
-    // Clear the input field after getting its value
-    tcCodeInput.value = '';
-    
-    // Prepare the data for update
-    const updateData = {
-        _id: configId
-    };
-    
-    if (rp) updateData.rp = parseFloat(rp);
-    if (executionSide) updateData.execution_side = executionSide;
-    if (fixPoint) updateData.fix_point = parseFloat(fixPoint);
-    if (stepPoint) updateData.step_point = parseFloat(stepPoint);
-    if (initiateTradeAtZero) updateData.initiate_trade_at_zero = initiateTradeAtZero === 'true';
-    if (quantity) updateData.quantity = parseInt(quantity, 10);
-    if (enabled) updateData.enabled = enabled === 'true';
     
     try {
-        const response = await fetch(`${BASE_URL}/api/trade_config?code=${encodeURIComponent(tcCode)}`, {
+        // Prepare the data for update - using the original structure
+        const updateData = {
+            _id: configId
+        };
+        
+        if (rp) updateData.rp = parseFloat(rp);
+        if (executionSide) updateData.execution_side = executionSide;
+        if (fixPoint) updateData.fix_point = parseFloat(fixPoint);
+        if (stepPoint) updateData.step_point = parseFloat(stepPoint);
+        if (initiateTradeAtZero !== undefined) updateData.initiate_trade_at_zero = initiateTradeAtZero;
+        if (quantity) updateData.quantity = parseInt(quantity, 10);
+        if (enabled !== undefined) updateData.enabled = enabled;
+        
+        // Use the original endpoint structure and POST method
+        const response = await fetch(`${BASE_URL}/api/trade_config?code=${encodeURIComponent(accessCode)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -469,11 +485,12 @@ async function handleUpdateConfig() {
         const data = await response.json();
         
         if (data.status === 'success') {
-            // Hide the loader and result div
-            document.getElementById('updateConfigLoader').style.display = 'none';
-            document.getElementById('updateConfigResult').style.display = 'none';
+            showResult('updateConfigLoader', 'updateConfigResult', {
+                status: 'success',
+                message: data.message || 'Configuration updated successfully'
+            });
             
-            // Update the local configuration and refresh the display
+            // Update the local configuration data
             if (data.trade_configuration) {
                 // Find and update the configuration in the global array
                 const index = window.tradeConfigurations.findIndex(c => c._id === configId);
@@ -491,6 +508,9 @@ async function handleUpdateConfig() {
                     statusElement.className = 'success-message';
                     statusElement.textContent = data.message || 'Configuration updated successfully';
                     configCards.prepend(statusElement);
+                    
+                    // Close the modal after successful update
+                    closeConfigModal();
                     
                     // Make success message disappear after 2 seconds
                     setTimeout(() => {
@@ -532,10 +552,29 @@ function displayTradeConfigurations(configs) {
             <p>Step Point: ${config.step_point}</p>
             <p>Strategy: ${config.strategy || 'N/A'}</p>
             <p>Initiate Trade At Zero: ${config.initiate_trade_at_zero ? 'Yes' : 'No'}</p>
-            <p><span class="status ${config.enabled ? 'open' : 'cancelled'}">${config.enabled ? 'Enabled' : 'Disabled'}</span></p>
+            <p><span class="status ${config.enabled ? 'complete' : 'open'}">${ config.enabled ? 'Enabled' : 'Disabled'}</span></p>
         `;
         
         card.innerHTML = cardContent;
+        
+        // Make the card clickable to open the configuration modal
+        card.addEventListener('click', () => {
+            // Set the selected configuration in the dropdown
+            const configSelect = document.getElementById('configSelect');
+            for (let i = 0; i < configSelect.options.length; i++) {
+                if (configSelect.options[i].value === config._id) {
+                    configSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            // Update form fields with the selected configuration
+            updateFormForSelectedConfig(config._id);
+            
+            // Show the modal
+            openConfigModal();
+        });
+        
         configCards.appendChild(card);
     });
 }
@@ -577,6 +616,25 @@ function updateFormForSelectedConfig(configId) {
         document.getElementById('updateQuantity').value = config.quantity || '';
         document.getElementById('updateEnabled').value = config.enabled ? 'true' : 'false';
     }
+}
+
+// Function to open the configuration modal
+function openConfigModal() {
+    const modal = document.getElementById('configModal');
+    modal.classList.add('active');
+    
+    // Clear any previous result messages
+    document.getElementById('updateConfigResult').style.display = 'none';
+    document.getElementById('updateConfigLoader').style.display = 'none';
+    
+    // Clear the access code field
+    document.getElementById('modalAccessCode').value = '';
+}
+
+// Function to close the configuration modal
+function closeConfigModal() {
+    const modal = document.getElementById('configModal');
+    modal.classList.remove('active');
 }
 
 // End of file
