@@ -243,15 +243,15 @@ async function handleDashboardRequest() {
             document.getElementById('dashboardContent').style.display = 'block';
             
             // Add success message
-            const statusElement = document.createElement('div');
-            statusElement.className = 'success-message';
-            statusElement.textContent = 'Dashboard data loaded successfully';
-            document.getElementById('dashboardContent').prepend(statusElement);
+            // const statusElement = document.createElement('div');
+            // statusElement.className = 'success-message';
+            // statusElement.textContent = 'Dashboard data loaded successfully';
+            // document.getElementById('dashboardContent').prepend(statusElement);
             
             // Make success message disappear after 2 seconds
-            setTimeout(() => {
-                statusElement.remove();
-            }, 2000);
+            // setTimeout(() => {
+            //     statusElement.remove();
+            // }, 2000);
         } else {
             document.getElementById('dashboardLoader').style.display = 'none';
             showResult('dashboardLoader', 'dashboardResult', data, true);
@@ -400,15 +400,15 @@ async function handleTradeConfigRequest() {
             tradeConfigsList.style.display = 'block';
             
             // Add a temporary success message at the top of the trade configs list
-            const statusElement = document.createElement('div');
-            statusElement.className = 'success-message';
-            statusElement.textContent = `Found ${window.tradeConfigurations.length} trade configurations`;
-            tradeConfigsList.prepend(statusElement);
+            // const statusElement = document.createElement('div');
+            // statusElement.className = 'success-message';
+            // statusElement.textContent = `Found ${window.tradeConfigurations.length} trade configurations`;
+            // tradeConfigsList.prepend(statusElement);
             
             // Make success message disappear after 2 seconds
-            setTimeout(() => {
-                statusElement.remove();
-            }, 2000);
+            // setTimeout(() => {
+            //     statusElement.remove();
+            // }, 2000);
         } else {
             showResult('tcLoader', 'tcResult', { 
                 status: 'error', 
