@@ -6,13 +6,21 @@
     <title>Kite App Calculations</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --success-color: #2ecc71;
-            --error-color: #e74c3c;
-            --background-color: #f5f5f5;
-            --card-color: #ffffff;
-            --text-color: #333333;
+            --primary-color: #7e22ce; /* Rich purple - primary action color */
+            --secondary-color: #6b21a8; /* Darker purple for hover states */
+            --success-color: #15803d; /* Green for success states */
+            --error-color: #b91c1c; /* Red for errors */
+            --background-color: #18181b; /* Dark background */
+            --card-color: #27272a; /* Dark gray cards */
+            --text-color: #f4f4f5; /* Light gray text */
+            --text-light: #a1a1aa; /* Medium gray for secondary text */
+            --accent-color: #a855f7; /* Lighter purple accent */
+            --neutral-light: #3f3f46; /* Medium gray for subtle elements */
+            --neutral-dark: #52525b; /* Darker gray for borders */
+            --highlight-color: #2e2e36; /* Slightly lighter gray for highlights */
+            --profit-color: #22c55e; /* Bright green for profits */
+            --loss-color: #ef4444; /* Bright red for losses */
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -47,9 +55,10 @@
         .card {
             background-color: var(--card-color);
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid var(--neutral-light);
         }
 
         .card h2 {
@@ -71,18 +80,18 @@
         input[type="number"] {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--neutral-light);
             border-radius: 5px;
             font-size: 16px;
             margin-bottom: 10px;
-            background-color: white;
+            background-color: var(--highlight-color);
             color: var(--text-color);
         }
         
         input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 0 3px rgba(126, 34, 206, 0.3);
         }
 
         button {
@@ -106,11 +115,12 @@
             margin-top: 15px;
             padding: 15px;
             border-radius: 5px;
-            background-color: #f8f9fa;
+            background-color: var(--highlight-color);
             border-left: 4px solid var(--primary-color);
             white-space: pre-wrap;
             overflow-x: auto;
             display: none;
+            color: var(--text-color);
         }
 
         .success {
@@ -136,17 +146,18 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px auto;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: var(--card-color);
+            box-shadow: var(--card-shadow);
             border-radius: 5px;
             overflow: hidden;
             text-align: center;
+            border: 1px solid var(--neutral-light);
         }
 
         th, td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--neutral-light);
         }
 
         th {
@@ -156,16 +167,17 @@
         }
 
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: var(--highlight-color);
         }
 
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: rgba(126, 34, 206, 0.1);
         }
 
         .total-row {
             font-weight: bold;
-            background-color: #e8f4fd;
+            background-color: rgba(126, 34, 206, 0.15);
+            color: var(--text-color);
         }
 
         .back-link {
@@ -175,6 +187,8 @@
             text-decoration: none;
             font-weight: 600;
         }
+        
+
 
         .back-link:hover {
             text-decoration: underline;
